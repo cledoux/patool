@@ -24,6 +24,7 @@ import tempfile
 import time
 import traceback
 import locale
+import logging
 from . import configuration, ArchiveMimetypes, ArchiveCompressions
 try:
     from shutil import which
@@ -79,6 +80,11 @@ except ImportError:
                     if _access_check(name, mode):
                         return name
         return None
+
+# Create a logger for patoolib that prints all info & error messages to stdout
+logger = logging.getLogger('patoolib')
+logger.addHandler(logging.StreamHandler(sys.stderr))
+logger.setLevel(logging.INFO)
 
 
 def system_search_path():
@@ -506,14 +512,14 @@ def get_single_outfile (directory, archive, extension=""):
     return outfile + extension
 
 
-def log_error (msg, out=sys.stderr):
+def log_error (msg):
     """Print error message to stderr (or any other given output)."""
-    print("patool error:", msg, file=out)
+    logger.error(msg)
 
 
-def log_info (msg, out=sys.stdout):
+def log_info (msg):
     """Print info message to stdout (or any other given output)."""
-    print("patool:", msg, file=out)
+    logger.info(msg)
 
 
 def log_internal_error(out=sys.stderr, etype=None, evalue=None, tb=None):
